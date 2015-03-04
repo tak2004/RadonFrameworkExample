@@ -7,8 +7,6 @@ project(Console)
 include("Integrate.cmake")
 # Look at Integrate.cmake for detailed description of this function.
 Integrate(RADONFRAMEWORK "Radon framework" "RADONFRAMEWORK_HOME")
-# This project use the Radon CMake Framework to simplify common cmake tasks.
-include("${RADONFRAMEWORK_DIR}/cmake/extern/Generate.cmake")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)

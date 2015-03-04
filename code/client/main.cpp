@@ -32,6 +32,6 @@ void main()
     LogFatalError("Hello urgent error!");
 
     // wait till the thread pool processed all log messages
-    Singleton<Threading::ThreadPool>::GetInstance().WaitTillDone();
+    RF_Pattern::Singleton<Threading::ThreadPool>::GetInstance().WaitTillDone();
     return;
 }
