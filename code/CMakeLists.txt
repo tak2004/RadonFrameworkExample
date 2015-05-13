@@ -26,5 +26,6 @@ if (${CONSOLE_LINKER_USE_DEFAULTLIB})
 else()
 	set(RADONFRAMEWORK_USE_MICROCRT ON CACHE BOOL "" FORCE)
 endif()
+AddDependency(CONSOLE RadonFramework)
 # This call will take care of compiler and linker settings.
 Finalize(CONSOLE)
