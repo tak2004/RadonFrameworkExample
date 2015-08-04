@@ -26,7 +26,7 @@ AddDependency(CONSOLE RadonFramework)
 # This call will take care of compiler and linker settings.
 Finalize(CONSOLE)
 
-set(WINDOW_FILES "client/window.cpp")
+set(WINDOW_FILES "client/window.cpp" "client/window.hpp")
 Generate(EXECUTABLE WINDOW window "Frontend")
 if (${WINDOW_LINKER_USE_DEFAULTLIB})
 	set(RADONFRAMEWORK_USE_MICROCRT OFF CACHE BOOL "" FORCE)
