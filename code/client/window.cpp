@@ -34,14 +34,12 @@ BasicWindow::BasicWindow()
     auto& fonts = fontService.Fonts();
     //auto* font = fontService.FindFontByName("Arial");
 
-    RF_Draw::Path2D& path = m_Canvas.Draw2D.BeginPath();
-    path.FillProperties().Color = RF_Draw::Color4f(0.11f,0.11f,0.11f,1.0f);
-    path.AddRectangle(RF_Geo::Point2Df(0, 0), RF_Geo::Size2Df(128,32));
-    m_Canvas.Draw2D.EndPath(path);
-    RF_Draw::Text2D& hwText = m_Canvas.Draw2D.Text(fonts(0), "Hello World");
-    
-    m_Text = &hwText;
-    m_Path = &path;
+    auto path = m_Canvas.Draw2D.BeginPath();
+    path->FillProperties().Color = RF_Draw::Color4f(0.11f,0.11f,0.11f,1.0f);
+    path->AddRectangle(RF_Geo::Point2Df(0, 0), RF_Geo::Size2Df(128,32));
+    m_Path = m_Canvas.Draw2D.EndPath(*path);
+    auto hwText = m_Canvas.Draw2D.BeginText(fonts(0), "Hello World");
+    m_Text = m_Canvas.Draw2D.EndText(*hwText);
 }
 
 void BasicWindow::Idle()
