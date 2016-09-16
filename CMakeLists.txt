@@ -1,10 +1,13 @@
 # This example show how to use Radon Framework as external library.
-cmake_minimum_required(VERSION 2.8)
-project(RadonExamples)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
+if(NOT CMAKE_PROJECT_NAME OR "${CMAKE_PROJECT_NAME}" MATCHES "^RadonExamples$")
+    cmake_minimum_required(VERSION 2.8)
+    project(RadonExamples)
+    
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../dist)
+endif()
 
 # Integrate.cmake was copied from the Radon Framework repository.
 # It can be find at ${RADONFRAMEWORK_DIR}/cmake/extern/Integrate.cmake
