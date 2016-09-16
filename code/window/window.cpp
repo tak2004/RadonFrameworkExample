@@ -3,9 +3,6 @@
 #include <RadonFramework/System/Environment.hpp>
 #include "window.hpp"
 
-#include <windows.h>
-#undef DrawText
-
 namespace RadonExample {
 
 BasicWindow::BasicWindow()
@@ -18,7 +15,7 @@ BasicWindow::BasicWindow()
     RF_Type::String location = RF_SysEnv::ActiveLanguageLocation();
     RF_Type::String nativeLocation = RF_SysEnv::ActiveNativeLanguageLocation();
     // show the user the the parameter used to choose the right font
-    Label4.SetText(RF_Type::String::Format("Language=%s(%s) Location=%s(%s)",
+    Label4.SetText(RF_Type::String::Format("Language=%s(%s) Location=%s(%s)"_rfs,
         language, nativeLanguage, location, nativeLocation));
         
     RF_Collect::Array<RF_Text::UnicodeRangeIdentifier> ranges;
@@ -33,21 +30,6 @@ BasicWindow::BasicWindow()
 
     auto& fonts = fontService.Fonts();
     //auto* font = fontService.FindFontByName("Arial");
-
-    auto path = m_Canvas.Draw2D.BeginPath();
-    path->FillProperties().Color = RF_Draw::Color4f(0.11f,0.11f,0.11f,1.0f);
-    path->AddRectangle(RF_Geo::Point2Df(0, 0), RF_Geo::Size2Df(128,32));
-    m_Path = m_Canvas.Draw2D.EndPath(*path);
-    auto hwText = m_Canvas.Draw2D.BeginText(fonts(0), "Hello World");
-    m_Text = m_Canvas.Draw2D.EndText(*hwText);
-}
-
-void BasicWindow::Idle()
-{
-    m_Canvas.Clear();
-    m_Canvas.Draw2D.DrawPath(*m_Path, RF_Geo::Point2Df(10, 10));
-    m_Canvas.Draw2D.DrawText(*m_Text, RF_Geo::Point2Df(10, 10));
-    m_Canvas.SwapBuffer();
 }
 
 }
@@ -72,12 +54,12 @@ void main()
         RF_Geo::Size2D<RF_Type::Int32> windowSize((windows(i).Width()*dpiX)/96,(windows(i).Height()*dpiY)/96);
         windows(i).Resize(windowSize);
         windows(i).Size(windowSize);
-        windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi", dpiX, dpiY));
+        windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
         windows(i).Label1.SetText(screens[i].DeviceName());
         auto& resolution = screens[i].CurrentResolution();
 
-        windows(i).Label2.SetText(RF_Type::String::Format("Width=%d Height=%d",resolution.Width, resolution.Height));
-        windows(i).Label3.SetText(RF_Type::String::Format("X=%ddpi Y=%ddpi", dpiX, dpiY));
+        windows(i).Label2.SetText(RF_Type::String::Format("Width=%d Height=%d"_rfs,resolution.Width, resolution.Height));
+        windows(i).Label3.SetText(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
     }
 
     app->Run(&windows(0));

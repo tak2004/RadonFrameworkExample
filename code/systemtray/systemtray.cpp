@@ -67,7 +67,7 @@ void main()
     while(logic.ExitProgram == false)
     {
         RF_Form::WindowServiceLocator::Default().Application()->Run(0);
-        RF_SysThread::Thread::Sleep(napTime);
+        RF_Thread::Thread::Sleep(napTime);
     }
     return;
 }
