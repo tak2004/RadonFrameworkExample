@@ -94,7 +94,7 @@ void OpenGLRenderer::Process(const RF_Draw::Path2D& Path)
 {    
     auto hash = Path.GetHash();
     void* data;
-    if(!m_Objects.Get(hash, data))
+    if(!m_Objects.ContainsKey(hash))
     {
         Object obj;
         Path.Visit(m_Tesselator);

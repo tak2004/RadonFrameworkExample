@@ -14,6 +14,10 @@ public:
     virtual void Process(const RF_Draw::Path2D& Path) override;
     virtual void Draw(const RF_Draw::Path2D& Path) override;
     void SetCanvas(RF_Draw::Canvas3D& Canvas);
+    OpenGLRenderer& operator=(const OpenGLRenderer& Other)
+    { 
+        return *this;
+    }
 private:
     RF_Draw::Canvas3D* m_Canvas;
     RF_Draw::Path2DTriangulation m_Tesselator;
