@@ -5,6 +5,7 @@
 #include <RadonFramework/System/Drawing/OpenGL.hpp>
 #include <RadonFramework/Diagnostics/Profiling/GPUServiceLocator.hpp>
 #include "../shared/AMDGPUService.hpp"
+#include "../shared/NvidiaGPUService.hpp"
 
 namespace RadonExample {
 
@@ -39,6 +40,13 @@ void main()
     if(RF_SysProf::AMDGPUService::IsAvailable())
     {
         RF_Mem::AutoPointer<RF_Prof::GPUService> gpuService(new RF_SysProf::AMDGPUService("AMD"_rfs));
+        gpuService->ObtainGPUs();
+        RF_Prof::GPUServiceLocator::Register(gpuService);
+    }
+
+    if(RF_SysProf::NvidiaGPUService::IsAvailable())
+    {
+        RF_Mem::AutoPointer<RF_Prof::GPUService> gpuService(new RF_SysProf::NvidiaGPUService("Nvidia"_rfs));
         gpuService->ObtainGPUs();
         RF_Prof::GPUServiceLocator::Register(gpuService);
     }

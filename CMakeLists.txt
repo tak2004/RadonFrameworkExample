@@ -14,6 +14,8 @@ endif()
 include("Integrate.cmake")
 # Look at Integrate.cmake for detailed description of this function.
 
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/libs")
+
 # Generate looks for ${ProjectId}_FILES and add the containing files to the project.
 set(CONSOLE_FILES "code/console/console.cpp")
 # You find further information in cmake/extern/Generate.cmake .
@@ -63,5 +65,6 @@ if (${UI_LINKER_USE_DEFAULTLIB})
 else()
 	set(RADONFRAMEWORK_USE_MICROCRT ON CACHE BOOL "" FORCE)
 endif()
+target_link_libraries(ui nvapi64)
 AddDependency(UI RadonFramework)
 Finalize(UI)
