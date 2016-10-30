@@ -232,19 +232,19 @@ void AMDGPUService::ObtainGPUs()
 
                 if(ADL_OD6_TCCAPS_THERMAL_CONTROLLER == (thermalControllerCaps.iCapabilities & ADL_OD6_TCCAPS_THERMAL_CONTROLLER))
                 {
-                    m_GPUs[i].m_AvailableValues(GPUService::Temperature) = true;
-                    m_GPUs[i].m_MaxValues(GPUService::Temperature) = 130;
-                    m_GPUs[i].m_MinValues(GPUService::Temperature) = 0;
+                    m_GPUs[i].m_AvailableValues(GPUService::GPUTemperature) = true;
+                    m_GPUs[i].m_MaxValues(GPUService::GPUTemperature) = 130;
+                    m_GPUs[i].m_MinValues(GPUService::GPUTemperature) = 0;
                 }
             }
 
             ADLOD6Capabilities od6Capabilities = {0};
             if(ADL_OK == ADL_Overdrive6_Capabilities_Get(adapters[usedAdapters[i]].iAdapterIndex, &od6Capabilities))
             {
-                m_GPUs[i].m_AvailableValues(GPUService::Activity) = 
+                m_GPUs[i].m_AvailableValues(GPUService::GPUActivity) =
                     (od6Capabilities.iCapabilities & ADL_OD6_CAPABILITY_GPU_ACTIVITY_MONITOR) == ADL_OD6_CAPABILITY_GPU_ACTIVITY_MONITOR;
-                m_GPUs[i].m_MaxValues(GPUService::Activity) = 100;
-                m_GPUs[i].m_MinValues(GPUService::Activity) = 0;
+                m_GPUs[i].m_MaxValues(GPUService::GPUActivity) = 100;
+                m_GPUs[i].m_MinValues(GPUService::GPUActivity) = 0;
             }
 
             m_GPUs[i].m_AvailableValues(GPUService::CoreClock) = true;
@@ -329,12 +329,12 @@ void AMDGPUService::Update(const RF_Type::Size GPUIndex)
                 m_GPUs[GPUIndex].m_Values(GPUService::MemoryClock) = currentStatus.iMemoryClock / 100;
                 m_GPUs[GPUIndex].m_Values(GPUService::Lanes) = currentStatus.iCurrentBusLanes;
                 m_GPUs[GPUIndex].m_Values(GPUService::BusSpeed) = currentStatus.iCurrentBusSpeed;
-                m_GPUs[GPUIndex].m_Values(GPUService::Activity) = currentStatus.iActivityPercent;
+                m_GPUs[GPUIndex].m_Values(GPUService::GPUActivity) = currentStatus.iActivityPercent;
             }
             int temperature = 0;
             if(ADL_OK == ADL_Overdrive6_Temperature_Get(m_GPUs[GPUIndex].m_AdapterIndex, &temperature))
             {
-                m_GPUs[GPUIndex].m_Values(GPUService::Activity) = temperature/1000;
+                m_GPUs[GPUIndex].m_Values(GPUService::GPUTemperature) = temperature/1000;
             }
             ADLOD6FanSpeedInfo fanSpeedInfo = {0};
             if(ADL_OK == ADL_Overdrive6_FanSpeed_Get(m_GPUs[GPUIndex].m_AdapterIndex, &fanSpeedInfo))

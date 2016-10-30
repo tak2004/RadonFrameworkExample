@@ -18,7 +18,7 @@ BasicWindow::BasicWindow()
     m_VLayouter.AddChild(m_Label1);
     m_VLayouter.AddChild(m_FanRPM);
     m_Label1.SetText(":)"_rfs);
-    m_FanRPM.SetInfo(RF_Prof::GPUService::FanSpeedRPM);
+    m_FanRPM.SetInfo(RF_Prof::GPUService::GPUActivity);
     m_OpenGLRenderer.SetCanvas(m_Canvas);
     m_Canvas.SetRenderer(m_OpenGLRenderer);
 }

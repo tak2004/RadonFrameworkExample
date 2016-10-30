@@ -61,14 +61,10 @@ void NvidiaGPUService::ObtainGPUs()
         thermal.sensor[0].controller = NVAPI_THERMAL_CONTROLLER_GPU_INTERNAL;
         if(NvAPI_GPU_GetThermalSettings(m_GPUs[i].m_AdapterId, NVAPI_THERMAL_TARGET_NONE, &thermal) == NVAPI_OK)
         {
-            m_GPUs[i].m_AvailableValues(GPUService::Temperature) = true;
-            m_GPUs[i].m_MaxValues(GPUService::Temperature) = thermal.sensor[0].defaultMaxTemp;
-            m_GPUs[i].m_MinValues(GPUService::Temperature) = thermal.sensor[0].defaultMinTemp;
+            m_GPUs[i].m_AvailableValues(GPUService::GPUTemperature) = true;
+            m_GPUs[i].m_MaxValues(GPUService::GPUTemperature) = thermal.sensor[0].defaultMaxTemp;
+            m_GPUs[i].m_MinValues(GPUService::GPUTemperature) = thermal.sensor[0].defaultMinTemp;
         }
-
-        m_GPUs[i].m_AvailableValues(GPUService::Activity) = false;
-        m_GPUs[i].m_MaxValues(GPUService::Activity) = 100;
-        m_GPUs[i].m_MinValues(GPUService::Activity) = 0;
 
         NvU32 lanes;
         if(NvAPI_GPU_GetCurrentPCIEDownstreamWidth(m_GPUs[i].m_AdapterId, &lanes) == NVAPI_OK)
@@ -91,6 +87,15 @@ void NvidiaGPUService::ObtainGPUs()
             m_GPUs[i].m_AvailableValues(GPUService::CoreClock) = clkFreq.domain[NVAPI_GPU_PUBLIC_CLOCK_GRAPHICS].bIsPresent;
             m_GPUs[i].m_MaxValues(GPUService::CoreClock) = 1;
             m_GPUs[i].m_MinValues(GPUService::CoreClock) = 0;
+        }
+
+        NV_GPU_DYNAMIC_PSTATES_INFO_EX states = {0};
+        states.version = NV_GPU_DYNAMIC_PSTATES_INFO_EX_VER;
+        if(NvAPI_GPU_GetDynamicPstatesInfoEx(m_GPUs[i].m_AdapterId, &states) == NVAPI_OK)
+        {
+            m_GPUs[i].m_AvailableValues(GPUService::GPUActivity) = states.utilization[0].bIsPresent;
+            m_GPUs[i].m_MaxValues(GPUService::GPUActivity) = 1;
+            m_GPUs[i].m_MinValues(GPUService::GPUActivity) = 0;
         }
 
         m_GPUs[i].m_AvailableValues(GPUService::BusSpeed) = false;
@@ -165,7 +170,7 @@ void NvidiaGPUService::Update(const RF_Type::Size GPUIndex)
             }
         }
 
-        if(m_GPUs[GPUIndex].m_AvailableValues(GPUService::Temperature))
+        if(m_GPUs[GPUIndex].m_AvailableValues(GPUService::GPUTemperature))
         {
             NV_GPU_THERMAL_SETTINGS thermal = {0};
             thermal.version = NV_GPU_THERMAL_SETTINGS_VER;
@@ -173,7 +178,7 @@ void NvidiaGPUService::Update(const RF_Type::Size GPUIndex)
             thermal.sensor[0].controller = NVAPI_THERMAL_CONTROLLER_GPU_INTERNAL;
             if(NvAPI_GPU_GetThermalSettings(m_GPUs[GPUIndex].m_AdapterId, NVAPI_THERMAL_TARGET_NONE, &thermal) == NVAPI_OK)
             {
-                m_GPUs[GPUIndex].m_Values(GPUService::Temperature) = thermal.sensor[0].currentTemp;
+                m_GPUs[GPUIndex].m_Values(GPUService::GPUTemperature) = thermal.sensor[0].currentTemp;
             }
         }
 
@@ -205,6 +210,16 @@ void NvidiaGPUService::Update(const RF_Type::Size GPUIndex)
             if(NvAPI_GPU_GetAllClockFrequencies(m_GPUs[GPUIndex].m_AdapterId, &clkFreq) == NVAPI_OK)
             {
                 m_GPUs[GPUIndex].m_Values(GPUService::CoreClock) = clkFreq.domain[NVAPI_GPU_PUBLIC_CLOCK_GRAPHICS].frequency/1000;
+            }
+        }
+
+        if(m_GPUs[GPUIndex].m_AvailableValues(GPUService::GPUActivity))
+        {
+            NV_GPU_DYNAMIC_PSTATES_INFO_EX states = {0};
+            states.version = NV_GPU_DYNAMIC_PSTATES_INFO_EX_VER;
+            if(NvAPI_GPU_GetDynamicPstatesInfoEx(m_GPUs[GPUIndex].m_AdapterId, &states) == NVAPI_OK)
+            {
+                m_GPUs[GPUIndex].m_Values(GPUService::GPUActivity) = states.utilization[0].percentage / 100.0f;
             }
         }
     }
