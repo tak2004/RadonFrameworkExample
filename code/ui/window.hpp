@@ -13,6 +13,8 @@ public:
     RF_Form::Label& GetLabel1();
 protected:
     RF_Draw::Canvas3D m_Canvas;
+    RF_Form::GridLayouter m_Layouter;
+    RF_Form::VerticalLayouter m_VLayouter;
     RF_Form::Label m_Label1;
     RF_Form::GPUInfoGraph m_FanRPM;
     OpenGLRenderer m_OpenGLRenderer;

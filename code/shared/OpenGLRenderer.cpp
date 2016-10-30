@@ -19,7 +19,6 @@ void OpenGLRenderer::StartFrame()
 {
     glClearColor(0.2,0.2,0.2,1.0);
     m_Canvas->Clear();
-
     m_ShaderPool(0).Bind();
 }
 
@@ -41,28 +40,34 @@ RF_Type::UInt32 OpenGLRenderer::Process(RF_Type::UInt32 EntityId, const RF_Draw:
         else
         {
             Path.Visit(m_Tesselator);
-            auto vertices = m_Tesselator.GetVertices();
+            auto& vertices = m_Tesselator.GetVertices();
+            auto& colors = m_Tesselator.GetColors();
             if(vertices.Count())
             {
-                data->Update(vertices(0).Value, vertices.Count(), 2);
+                data->Update((RF_Type::Float32*)&vertices(0), (RF_Type::Float32*)&colors(0), vertices.Count(), 2);
+            }
+            else
+            {
+                data->Update(0, 0, 0);
             }
             data->Hash = Path.GetHash();
         }
     }
     else
     {
-        EntityId = m_NextId;
-        ++m_NextId;
-
         Path.Visit(m_Tesselator);
-        auto vertices = m_Tesselator.GetVertices();
+        auto& vertices = m_Tesselator.GetVertices();
+        auto& colors = m_Tesselator.GetColors();
         if(vertices.Count())
         {
             RF_Mem::AutoPointer<OpenGLModel> obj(new OpenGLModel);
-            obj->Generate(vertices(0).Value, vertices.Count(), 2);
+            obj->Generate((RF_Type::Float32*)&vertices(0), (RF_Type::Float32*)&colors(0), vertices.Count(), 2);
             m_ObjectPool.Resize(m_ObjectPool.Count() + 1);
+            EntityId = m_NextId;
             m_ObjectPool(m_ObjectPool.Count() - 1) = EntityId;
+            obj->Hash = Path.GetHash();
             m_Objects.Add(EntityId, obj.Release());
+            ++m_NextId;
         }
     }
     return EntityId;
@@ -87,10 +92,11 @@ void OpenGLRenderer::SetCanvas(RF_Draw::Canvas3D& Canvas)
 void OpenGLRenderer::ResizedViewport()
 {
     m_Canvas->MakeCurrent();
+    m_Projection.SetSize(m_Canvas->GetSize());
     m_SharedTransformUniforms.ModelView = m_Camera.GetMatrix();
     m_SharedTransformUniforms.ModelViewProjection = m_Projection.GetMatrix(RF_Geo::Viewtype::View3D) * m_SharedTransformUniforms.ModelView;
     m_SharedTransformUniforms.UIProjection = m_Projection.GetMatrix(RF_Geo::Viewtype::View2D);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_SharedUBO);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_SharedUBO);
     glNamedBufferSubData(m_SharedUBO, 0, sizeof(SharedTransformUniforms), &m_SharedTransformUniforms);
 }
 

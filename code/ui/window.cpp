@@ -10,10 +10,13 @@
 namespace RadonExample {
 
 BasicWindow::BasicWindow()
-:m_Canvas(*this)
-,m_Label1(&m_Canvas)
-,m_FanRPM(&m_Canvas)
+:Form()
+,m_Canvas(*this)
+,m_Layouter(&m_Canvas, 3, 3)
 {
+    m_Layouter.AddChild(m_VLayouter, 0,2);
+    m_VLayouter.AddChild(m_Label1);
+    m_VLayouter.AddChild(m_FanRPM);
     m_Label1.SetText(":)"_rfs);
     m_FanRPM.SetInfo(RF_Prof::GPUService::FanSpeedRPM);
     m_OpenGLRenderer.SetCanvas(m_Canvas);
@@ -58,12 +61,15 @@ void main()
 
     for(RF_Type::Size i = 0; i < screens.Count(); i++)
     {
-        windows(i).Position(screens[i].Position());
+        windows(i).SetWindowPosition(screens[i].Position());
         RF_Type::UInt32 dpiX = screens[i].DPIX();
         RF_Type::UInt32 dpiY = screens[i].DPIY();
-        RF_Geo::Size2D<RF_Type::Int32> windowSize((windows(i).Width()*dpiX)/96,(windows(i).Height()*dpiY)/96);
-        windows(i).Resize(windowSize);
-        windows(i).Size(windowSize);
+        RF_Geo::Size2D<> windowSize((windows(i).Width()*dpiX)/96,(windows(i).Height()*dpiY)/96);
+        RF_Geo::Point2D<> dpi;
+        dpi.X = dpiX;
+        dpi.Y = dpiY;
+        windows(i).DPIChanged(dpi);
+        windows(i).SetWindowSize(windowSize);
         windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
     }
 

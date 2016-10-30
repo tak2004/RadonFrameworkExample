@@ -11,21 +11,25 @@ void OpenGLShader::Generate()
     const char* vertex_shader =
         "#version 420\n"
         "layout(location = 0) in vec2 vertex_position;"
-        "layout(std140, binding = 1) uniform SharedTransformUniforms"
+        "layout(location = 1) in vec4 vertex_color;"
+        "layout(std140, binding = 0) uniform SharedTransformUniforms"
         "{"
         "    mat4 ModelView;"
         "    mat4 ModelViewProjection;"
         "    mat4 UIProjection;"
         "};"
+        "out vec4 rgba;"
         "void main () {"
         "  gl_Position = UIProjection*vec4(vertex_position, -1.0, 1.0);"
+        "  rgba = vertex_color;"
         "}";
 
     const char* fragment_shader =
         "#version 420\n"
         "out vec4 frag_colour;"
+        "in vec4 rgba;"
         "void main () {"
-        "  frag_colour = vec4 (0.5, 0.5, 0.5, 1.0);"
+        "  frag_colour = rgba;"
         "}";
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
