@@ -57,6 +57,20 @@ void main()
     auto* app = RF_Form::WindowServiceLocator::Default().Application();
     app->ShowConsole(false);
 
+    RF_Type::String iso = RF_SysEnv::ActiveLanguage();
+    RF_Collect::Array<RF_Text::UnicodeRangeIdentifier> ranges;
+    auto& fontService = RF_Draw::FontServiceLocator::Default();
+    fontService.GetUnicodeCharRanges(iso, ranges);
+    fontService.EnableCharRangeFilter(ranges);
+    fontService.Update();
+
+    RF_Collect::Array<RF_Draw::Path2D> glyphs;
+    auto& fonts = fontService.Fonts();
+    if(fonts.Count() > 0)
+    {
+        fontService.LoadGlyphs(fonts(0), glyphs);
+    }
+
     windows.Resize(screens.Count());
 
     for(RF_Type::Size i = 0; i < screens.Count(); i++)

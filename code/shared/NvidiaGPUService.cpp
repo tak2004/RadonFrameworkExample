@@ -22,7 +22,7 @@ NvidiaGPUService::NvidiaGPUService(const RF_Type::String& Name)
 
 NvidiaGPUService::~NvidiaGPUService()
 {
-    NvAPI_Unload();
+//    NvAPI_Unload();
 }
 
 void NvidiaGPUService::ObtainGPUs()
