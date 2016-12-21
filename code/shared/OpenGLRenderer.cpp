@@ -87,6 +87,7 @@ void OpenGLRenderer::Draw()
 void OpenGLRenderer::SetCanvas(RF_Draw::Canvas3D& Canvas)
 {
     m_Canvas = &Canvas;
+    Canvas.SetRenderer(*this);
 }
 
 void OpenGLRenderer::ResizedViewport()

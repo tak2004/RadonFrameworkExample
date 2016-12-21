@@ -14,6 +14,8 @@ endif()
 include("Integrate.cmake")
 # Look at Integrate.cmake for detailed description of this function.
 
+#set(RADONFRAMEWORK_STATICLINK_WINDOW_GDI ON CACHE BOOL "" FORCE)
+
 link_directories("${CMAKE_CURRENT_SOURCE_DIR}/libs")
 
 # Generate looks for ${ProjectId}_FILES and add the containing files to the project.
@@ -29,6 +31,15 @@ endif()
 AddDependency(CONSOLE RadonFramework)
 # This call will take care of compiler and linker settings.
 Finalize(CONSOLE)
+
+set(WINDOW_SUPPORT_DEPS "")
+if(RADONFRAMEWORK_STATICLINK_WINDOW_GDI)
+    list(APPEND WINDOW_SUPPORT_DEPS WindowGDI)
+endif()
+set(RENDERING_SUPPORT_DEPS ${WINDOW_SUPPORT_DEPS})
+if(RADONFRAMEWORK_STATICLINK_RENDERING_DWM)
+    list(APPEND RENDERING_SUPPORT_DEPS RenderingDWM)
+endif()
 
 set(WINDOW_FILES "code/window/window.cpp" "code/window/window.hpp")
 Generate(EXECUTABLE WINDOW window "Frontend")
@@ -66,5 +77,19 @@ else()
 	set(RADONFRAMEWORK_USE_MICROCRT ON CACHE BOOL "" FORCE)
 endif()
 target_link_libraries(ui nvapi64)
-AddDependency(UI RadonFramework)
+AddDependency(UI RadonFramework ${RENDERING_SUPPORT_DEPS})
 Finalize(UI)
+
+set(RENDERER_FILES "")
+AddSourceDirectoryRecursive(filelist "code/renderer" "Sources")
+list(APPEND RENDERER_FILES ${filelist})
+AddHeaderDirectoryRecursive(filelist "code/renderer" "Includes")
+list(APPEND RENDERER_FILES ${filelist})
+Generate(EXECUTABLE RENDERER Renderer "Frontend")
+if (${RENDERER_LINKER_USE_DEFAULTLIB})
+	set(RADONFRAMEWORK_USE_MICROCRT OFF CACHE BOOL "" FORCE)
+else()
+	set(RADONFRAMEWORK_USE_MICROCRT ON CACHE BOOL "" FORCE)
+endif()
+AddDependency(RENDERER RadonFramework ${WINDOW_SUPPORT_DEPS})
+Finalize(RENDERER)

@@ -20,7 +20,6 @@ BasicWindow::BasicWindow()
     m_Label1.SetText(":)"_rfs);
     m_FanRPM.SetInfo(RF_Prof::GPUService::GPUActivity);
     m_OpenGLRenderer.SetCanvas(m_Canvas);
-    m_Canvas.SetRenderer(m_OpenGLRenderer);
 }
 
 RF_Form::Label& BasicWindow::GetLabel1()
@@ -54,21 +53,19 @@ void main()
         RF_Prof::GPUServiceLocator::Register(gpuService);
     }
 
-    auto* app = RF_Form::WindowServiceLocator::Default().Application();
-    app->ShowConsole(false);
-
     RF_Type::String iso = RF_SysEnv::ActiveLanguage();
-    RF_Collect::Array<RF_Text::UnicodeRangeIdentifier> ranges;
+    RF_Collect::Array<RF_Text::UnicodeRangeInfo> ranges;
     auto& fontService = RF_Draw::FontServiceLocator::Default();
     fontService.GetUnicodeCharRanges(iso, ranges);
     fontService.EnableCharRangeFilter(ranges);
     fontService.Update();
 
-    RF_Collect::Array<RF_Draw::Path2D> glyphs;
+    RF_Collect::Array<RF_Type::UInt32> glyphUtf32;
+    RF_Collect::Array<RF_Draw::Path2D> glyphOutlines;
     auto& fonts = fontService.Fonts();
     if(fonts.Count() > 0)
     {
-        fontService.LoadGlyphs(fonts(0), glyphs);
+        fontService.LoadGlyphs(fonts(0), glyphUtf32, glyphOutlines);
     }
 
     windows.Resize(screens.Count());
@@ -87,7 +84,12 @@ void main()
         windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
     }
 
-    app->Run(&windows(0));
+    auto* app = RF_Form::WindowServiceLocator::Default().Application();
+    if (app != nullptr)
+    {
+        app->ShowConsole(false);
+        app->Run(&windows(0));
+    }
     
     return;
 }
