@@ -17,6 +17,7 @@ BasicWindow::BasicWindow()
     m_Layouter.AddChild(m_VLayouter, 0,2);
     m_VLayouter.AddChild(m_Label1);
     m_VLayouter.AddChild(m_FanRPM);
+    m_VLayouter.AddChild(m_Image);
     m_Label1.SetText(":)"_rfs);
     m_FanRPM.SetInfo(RF_Prof::GPUService::GPUActivity);
     m_OpenGLRenderer.SetCanvas(m_Canvas);
@@ -25,6 +26,11 @@ BasicWindow::BasicWindow()
 RF_Form::Label& BasicWindow::GetLabel1()
 {
     return m_Label1;
+}
+
+RF_Form::Image& BasicWindow::GetImage()
+{
+    return m_Image;
 }
 
 }
@@ -60,12 +66,22 @@ void main()
     fontService.EnableCharRangeFilter(ranges);
     fontService.Update();
 
-    RF_Collect::Array<RF_Type::UInt32> glyphUtf32;
+
+    RF_Collect::Array<RF_Draw::Image> glyphs;
     RF_Collect::Array<RF_Draw::Path2D> glyphOutlines;
     auto& fonts = fontService.Fonts();
     if(fonts.Count() > 0)
     {
-        fontService.LoadGlyphs(fonts(0), glyphUtf32, glyphOutlines);
+        RF_Collect::Array<RF_Type::UInt32> utf32;
+        RF_Text::UnicodeRangeInfo range;
+        fontService.GetUnicodeCharRange(fonts(0).Variations(0).SupportedUnicodeSubranges(0), range);        
+        utf32.Resize(range.End()-range.Start());
+        for (RF_Type::Size i =0 ; i < utf32.Count(); ++i)
+        {
+            utf32(i)= range.Start()+i;
+        }
+        fontService.LoadGlyphs(fonts(0), utf32, glyphOutlines);
+        fontService.LoadGlyphs(fonts(0), utf32, glyphs);
     }
 
     windows.Resize(screens.Count());
@@ -82,6 +98,7 @@ void main()
         windows(i).DPIChanged(dpi);
         windows(i).SetWindowSize(windowSize);
         windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
+        windows(i).GetImage().SetImage(glyphs(1));
     }
 
     auto* app = RF_Form::WindowServiceLocator::Default().Application();

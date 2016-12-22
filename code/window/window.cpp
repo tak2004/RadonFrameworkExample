@@ -6,8 +6,13 @@
 namespace RadonExample {
 
 BasicWindow::BasicWindow()
-:m_Canvas(*this) 
+:Form()
+,m_Canvas(*this)
+,m_VLayouter(&m_Canvas)
 {
+    m_VLayouter.AddChild(Label1);
+    m_VLayouter.AddChild(Label2);
+    m_VLayouter.AddChild(Label3);
     // get current user language
     RF_Type::String iso = RF_SysEnv::ActiveLanguage();
     RF_Type::String language = RF_SysEnv::ActiveLanguageName();
@@ -15,8 +20,11 @@ BasicWindow::BasicWindow()
     RF_Type::String location = RF_SysEnv::ActiveLanguageLocation();
     RF_Type::String nativeLocation = RF_SysEnv::ActiveNativeLanguageLocation();
     // show the user the the parameter used to choose the right font
-    Label4.SetText(RF_Type::String::Format("Language=%s(%s) Location=%s(%s)"_rfs,
-        language, nativeLanguage, location, nativeLocation));
+    Label1.SetText(RF_Type::String::Format("Language=%s(%s)"_rfs,
+                                           language, nativeLanguage));
+    Label2.SetText(RF_Type::String::Format("Location=%s(%s)"_rfs,
+                                           location, nativeLocation));
+    Label3.SetText(RF_Type::String::Format("ISO=%s"_rfs, iso));
         
     RF_Collect::Array<RF_Text::UnicodeRangeInfo> ranges;
     RF_Draw::FontStyle styleFilter = RF_Draw::FontStyle::Standard | RF_Draw::FontStyle::Regular;
@@ -30,6 +38,8 @@ BasicWindow::BasicWindow()
 
     auto& fonts = fontService.Fonts();
     //auto* font = fontService.FindFontByName("Arial");
+
+    m_OpenGLRenderer.SetCanvas(m_Canvas);
 }
 
 }
@@ -49,6 +59,7 @@ void main()
         RF_Type::UInt32 dpiX = screens[i].DPIX();
         RF_Type::UInt32 dpiY = screens[i].DPIY();
         RF_Geo::Size2D<> windowSize((windows(i).Width()*dpiX)/96,(windows(i).Height()*dpiY)/96);
+        windows(i).Resize(windowSize);
         windows(i).SetWindowSize(windowSize);
         windows(i).Title(RF_Type::String::Format("X=%ddpi Y=%ddpi"_rfs, dpiX, dpiY));
         windows(i).Label1.SetText(screens[i].DeviceName());
