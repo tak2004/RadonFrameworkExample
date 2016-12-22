@@ -1,8 +1,6 @@
 #ifndef RE_WINDOW_HPP
 #define RE_WINDOW_HPP
 
-#include "../shared/OpenGLRenderer.hpp"
-
 namespace RadonExample {
 
 class BasicWindow: public RF_Form::Form
@@ -19,7 +17,6 @@ protected:
     RF_Form::Label m_Label1;
     RF_Form::GPUInfoGraph m_FanRPM;
     RF_Form::Image m_Image;
-    OpenGLRenderer m_OpenGLRenderer;
 };
 
 }

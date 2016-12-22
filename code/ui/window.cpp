@@ -2,7 +2,6 @@
 #include <RadonFramework/Radon.hpp>
 #include <RadonFramework/System/Environment.hpp>
 #include "window.hpp"
-#include <RadonFramework/System/Drawing/OpenGL.hpp>
 #include <RadonFramework/Diagnostics/Profiling/GPUServiceLocator.hpp>
 #include "../shared/AMDGPUService.hpp"
 #include "../shared/NvidiaGPUService.hpp"
@@ -20,7 +19,6 @@ BasicWindow::BasicWindow()
     m_VLayouter.AddChild(m_Image);
     m_Label1.SetText(":)"_rfs);
     m_FanRPM.SetInfo(RF_Prof::GPUService::GPUActivity);
-    m_OpenGLRenderer.SetCanvas(m_Canvas);
 }
 
 RF_Form::Label& BasicWindow::GetLabel1()
@@ -66,7 +64,6 @@ void main()
     fontService.EnableCharRangeFilter(ranges);
     fontService.Update();
 
-
     RF_Collect::Array<RF_Draw::Image> glyphs;
     RF_Collect::Array<RF_Draw::Path2D> glyphOutlines;
     auto& fonts = fontService.Fonts();
@@ -74,11 +71,11 @@ void main()
     {
         RF_Collect::Array<RF_Type::UInt32> utf32;
         RF_Text::UnicodeRangeInfo range;
-        fontService.GetUnicodeCharRange(fonts(0).Variations(0).SupportedUnicodeSubranges(0), range);        
-        utf32.Resize(range.End()-range.Start());
-        for (RF_Type::Size i =0 ; i < utf32.Count(); ++i)
+        fontService.GetUnicodeCharRange(fonts(0).Variations(0).SupportedUnicodeSubranges(0), range);
+        utf32.Resize(range.End() - range.Start());
+        for(RF_Type::Size i = 0; i < utf32.Count(); ++i)
         {
-            utf32(i)= range.Start()+i;
+            utf32(i) = range.Start() + i;
         }
         fontService.LoadGlyphs(fonts(0), utf32, glyphOutlines);
         fontService.LoadGlyphs(fonts(0), utf32, glyphs);
@@ -91,7 +88,7 @@ void main()
         windows(i).SetWindowPosition(screens[i].Position());
         RF_Type::UInt32 dpiX = screens[i].DPIX();
         RF_Type::UInt32 dpiY = screens[i].DPIY();
-        RF_Geo::Size2D<> windowSize((windows(i).Width()*dpiX)/96,(windows(i).Height()*dpiY)/96);
+        RF_Geo::Size2D<> windowSize((windows(i).Width()*dpiX) / 96, (windows(i).Height()*dpiY) / 96);
         RF_Geo::Point2D<> dpi;
         dpi.X = dpiX;
         dpi.Y = dpiY;
