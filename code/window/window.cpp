@@ -38,8 +38,6 @@ BasicWindow::BasicWindow()
 
     auto& fonts = fontService.Fonts();
     //auto* font = fontService.FindFontByName("Arial");
-
-    m_OpenGLRenderer.SetCanvas(m_Canvas);
 }
 
 }
