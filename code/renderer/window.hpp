@@ -28,6 +28,8 @@ protected:
     RF_Type::Float32 m_NextPhysicStep;
     RF_Type::Float32 m_PhysicStep;
     RF_Type::UInt32 m_BufferId;
+    RF_Type::UInt32 m_ProgramId;
+    RF_Type::UInt32 m_MaterialId;
     RF_Collect::CommandBucket<>* m_RendererQueue;
 };
 
