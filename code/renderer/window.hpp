@@ -15,7 +15,7 @@ public:
     BasicWindow();
     virtual void RebuildVisuals() override;
     virtual void Idle() override;
-protected:
+protected: 
     RF_Draw::Canvas3D m_Canvas;
     RF_Form::GridLayouter m_Layouter;
     RF_Form::GPUInfoGraph m_FanRPM;
@@ -25,11 +25,12 @@ protected:
         RF_Geo::Vec3f Force;
     };
     RF_Collect::Array<Particle> m_Particles;
-    RF_Type::Float32 m_NextPhysicStep;
-    RF_Type::Float32 m_PhysicStep;
+    RF_Type::UInt64 m_NextPhysicStep;
+    RF_Type::UInt64 m_PhysicStep;
     RF_Type::UInt32 m_BufferId;
     RF_Type::UInt32 m_ProgramId;
     RF_Type::UInt32 m_MaterialId;
+    RF_Type::UInt32 m_ObjectId;
     RF_Collect::CommandBucket<>* m_RendererQueue;
 };
 

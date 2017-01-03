@@ -20,12 +20,16 @@ BasicWindow::BasicWindow()
     RF_Draw::GenerateBuffer::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::GenerateBuffer);
     RF_Draw::DestroyBuffer::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::DestroyBuffer);
     RF_Draw::UpdateBuffer::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::UpdateBuffer);
+    RF_Draw::AssignBufferToObject::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::AssignBufferToObject);
+    RF_Draw::GenerateObject::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::GenerateObject);
+    RF_Draw::DestroyObject::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::DestroyObject);
     RF_Draw::RenderObject::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::RenderObject);
     RF_Draw::GenerateProgram::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::GenerateProgram);
     RF_Draw::DestroyProgram::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::DestroyProgram);
     RF_Draw::GenerateMaterial::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::GenerateMaterial);
 
     m_Canvas.GetRenderer()->ResizeQueueCount(1);
+    m_Canvas.SetVSync(false);
     m_RendererQueue = m_Canvas.GetRenderer()->GetQueue(0);
     m_NextPhysicStep = m_Now + m_PhysicStep;
     m_Layouter.AddChild(m_FanRPM, 0, 2);
@@ -55,9 +59,15 @@ BasicWindow::BasicWindow()
     genProgram->FragmentByteSize = sizeof(Color3D_frag);
     genProgram->GeometryByteSize = 0;
     // generate a material which orchestrate the rendering
-    RF_Draw::GenerateMaterial* genMaterial = m_RendererQueue->AddCommand<RF_Draw::GenerateMaterial>(0);
+    RF_Draw::GenerateMaterial* genMaterial = m_RendererQueue->AppendCommand<RF_Draw::GenerateMaterial>(*genProgram);
     genMaterial->Material = &m_MaterialId;
     genMaterial->Program = &m_ProgramId;
+    RF_Draw::GenerateObject* genObject = m_RendererQueue->AppendCommand<RF_Draw::GenerateObject>(*genMaterial);
+    genObject->Object = &m_ObjectId;
+    genObject->Material = &m_MaterialId;
+    RF_Draw::AssignBufferToObject* assignBuffer = m_RendererQueue->AppendCommand<RF_Draw::AssignBufferToObject>(*genObject);
+    assignBuffer->Object = &m_ObjectId;
+    assignBuffer->Buffer = &m_BufferId;
 }
 
 void BasicWindow::RebuildVisuals()
@@ -121,10 +131,10 @@ void BasicWindow::Idle()
     {
         render = m_RendererQueue->AppendCommand<RF_Draw::RenderObject>(*update);
     }
-    render->Buffer = &m_BufferId;
     render->Elements = m_Particles.Count();
     render->ElementType = RF_Draw::RenderObject::PointSprites;
-    render->Material = &m_MaterialId;
+    render->Object = &m_ObjectId;
+
     // take care of ui rendering and Canvas3D will be process the commands
     Form::Idle();
 }
