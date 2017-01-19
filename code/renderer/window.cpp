@@ -5,6 +5,12 @@
 #include "RadonFramework/Math/Random.hpp"
 #include "RadonFramework/Drawing/BasicRenderFunction.hpp"
 #include "Color3D.glsl"
+#include "vec.hpp"
+
+#include <RadonFramework/Memory/FixSizeStackAllocator.hpp>
+#include <RadonFramework/Memory/FallbackAllocator.hpp>
+#include <RadonFramework/Memory/HeapAllocator.hpp>
+#include <RadonFramework/Memory/FreeListAllocator.hpp>
 
 namespace RadonExample {
 
@@ -16,6 +22,34 @@ BasicWindow::BasicWindow()
 ,m_PhysicStep(RF_Time::TimeSpan::TicksPerSecond / 60)
 ,m_BufferId(0)
 {
+    RF_Mem::FallbackAllocator<RF_Mem::FixSizeStackAllocator<4096>, 
+        RF_Mem::FixSizeStackAllocator<40960>> Arena;
+    RF_Mem::FallbackAllocator<RF_Mem::FixSizeStackAllocator<4096>,
+        RF_Mem::FixSizeStackAllocator<40960>> Arena2;
+    RF_Mem::FallbackAllocator<RF_Mem::FixSizeStackAllocator<4096>,
+        RF_Mem::HeapAllocator> Arena3;
+    RF_Mem::FreeListAllocator<RF_Mem::HeapAllocator,4096,16> Arena4;
+    auto mem5 = Arena4.Allocate(16);
+    auto mem3 = Arena3.Allocate(3000);
+    auto mem4 = Arena3.Allocate(3000);
+    auto mem2= Arena2.Allocate(512);
+    auto result = Arena2.Owns(mem2);
+    auto mem=Arena.Allocate(512);
+    result = Arena.Owns(mem2);
+    result = Arena.Owns(mem);
+    Arena.Deallocate(mem);
+//     vector3     g_vA(1, 1, 1);
+//     vector3     g_vB(2, 2, 2);
+//     vector3     g_vC(3, 3, 3);
+//     vector3     g_vD(4, 4, 4);
+// 
+//     g_vA = g_vB + g_vC;
+//     RF_IO::LogInfo("[%f,%f,%f]", g_vA.X, g_vA.Y, g_vA.Z);
+//     RF_IO::LogInfo("[%f]", g_vD.Dot(g_vB + g_vC));
+//     g_vA = g_vA + g_vD.Dot(g_vB + g_vC);
+// 
+//     RF_IO::LogInfo("[%f,%f,%f]", g_vA.X, g_vA.Y, g_vA.Z);
+
     // assign dispatch functions of the active renderer
     RF_Draw::GenerateBuffer::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::GenerateBuffer);
     RF_Draw::DestroyBuffer::DispatchFunction = m_Canvas.GetRenderer()->GetGeneralPurposeDispatcher(RF_Draw::BasicRenderFunctionType::DestroyBuffer);
